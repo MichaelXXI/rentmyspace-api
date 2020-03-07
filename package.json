@@ -1,0 +1,25 @@
+{
+  "name": "user",
+  "version": "1.0.0",
+  "description": "ms-user-auth",
+  "main": "index.js",
+  "scripts": {
+    "start":"nodemon bin/www",
+    "test": "mocha test/test.spec.js",
+    "debug": "node --inspect-brk bin/www"
+
+  },
+  "keywords": [
+    "video"
+  ],
+  "author": "Mykhaylo Gusak",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^4.0.1",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.3",
+    "morgan": "^1.9.1",
+    "nodemon": "^2.0.2"
+  }
+}
