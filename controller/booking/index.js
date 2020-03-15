@@ -5,7 +5,9 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 
 exports.create_booking = (req, res) => {
-  const { scheduleId, userId } = req.params;
+  const { scheduleId } = req.params;
+  const { userId } = req;
+
   const { day, from, to, description, conditions } = req.body;
   debugger;
   (async () => {
