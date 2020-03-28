@@ -11,7 +11,7 @@ describe("filter", async () => {
   before(async () => {
     try {
       const user = await new User({
-        _id: new mongoose.Types.ObjectId(),
+        _id: mongoose.Types.ObjectId(),
         username: "miker",
         email: "misha@email.com",
         password: "aorgarg23",
@@ -32,7 +32,6 @@ describe("filter", async () => {
   describe("deded", async () => {
     it("should return -1 when the value is not present", async () => {
       debugger;
-      assert.equal([1, 2, 3].indexOf(4), -1);
     });
   });
 });

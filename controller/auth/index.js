@@ -5,8 +5,6 @@ const jwt = require("jsonwebtoken");
 
 exports.user_authentication = (req, res) => {
   const { username, password } = req.body;
-  debugger;
-
   (async () => {
     try {
       const user = await User.findOne({ username }).select("password isAdmin");
@@ -14,10 +12,13 @@ exports.user_authentication = (req, res) => {
 
       const result = await bcrypt.compare(password, user.password);
       if (!result) return res.sendStatus(400);
-      debugger
-      const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, "secret");
-      if (!token) return res.sendStatus(400);
 
+      const token = jwt.sign(
+        { userId: user.id, isAdmin: user.isAdmin },
+        "secret"
+      );
+      if (!token) return res.sendStatus(400);
+      debugger;
       res.status(200).json({ token });
     } catch (err) {
       res.sendStatus(400);

@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const controller = require("../../controller/booking");
 const auth_one = require("../../midleware/auth_one");
+const errorHandler = require("../../midleware/error_handler");
 
-/* Crate a new room */
-router.post("/", auth_one, controller.create_booking);
+/* Crate a booking room */
+router.post("/:roomId", auth_one, controller.create_booking, errorHandler);
 
 // /* Modify a room by id*/
 // router.put("/:roomId", auth_one, controller.update_room_by_id);

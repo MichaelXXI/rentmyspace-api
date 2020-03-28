@@ -1,39 +1,32 @@
-const Booking = require("../../entity/booking");
-const Schedule = require("../../entity/schedule");
-const User = require("../../entity/user");
-const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 
-exports.create_booking = (req, res) => {
-  const { scheduleId } = req.params;
-  const { userId } = req;
+const Booking = require("../../entity/booking");
+const User = require("../../entity/user");
 
-  const { day, from, to, description, conditions } = req.body;
+exports.create_booking = (req, res) => {
+  const { userId } = req;
+  const { roomId } = req.params;
+  const { day, startDate, duration, description, conditions } = req.body;
+
+  let milliseconds = 3600000;
+  let endDate = startDate + duration * milliseconds;
   debugger;
   (async () => {
     try {
-      const user = await User.findById(userId);
-      if (!user) return res.sendStatus(404);
-      debugger;
-      const schedule = await Schedule.findById(scheduleId);
-      if (!schedule || (schedule && !schedule[day])) return res.sendStatus(404);
+      const user = await User.findById(userId).orFail();
 
-      const booking = await new Booking({
-        _id: new mongoose.Types.ObjectId(),
-        userId,
-        from,
-        to,
+      const booking = await Booking.create({
+        _id: mongoose.Types.ObjectId(),
+        day,
+        startDate,
+        endDate,
         description,
         conditions
-      }).save();
+      });
 
-      schedule[day].push({ bookingId: booking.id });
-
-      await schedule.save();
-
-      res.status(200).json({ schedule });
+      res.status(200).json(booking);
     } catch (err) {
-      res.sendStatus(400);
+      netxt(err);
     }
   })();
 };

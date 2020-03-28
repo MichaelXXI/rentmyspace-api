@@ -1,2 +1,3 @@
 ENV=PRO
 SALT_ROUNDS=23.23
+milliseconds=3600000 

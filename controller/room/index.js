@@ -1,40 +1,30 @@
-const Room = require("../../entity/room");
-const Schedule = require("../../entity/schedule");
-const User = require("../../entity/user");
-const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 
-exports.create_room_by_userId = (req, res) => {
-  const { scheduleId, userId } = req.params;
-  const { description, images, price, conditions } = req.body;
-  debugger;
+const Room = require("../../entity/room");
+const Booking = require("../../entity/booking");
+const User = require("../../entity/user");
+
+exports.create_room_by_userId = (req, res, next) => {
+  const { userId, body } = req;
+
   (async () => {
     try {
-      const user = await User.findById(userId);
-      if (!user) return res.sendStatus(404);
+      await User.findById(userId).orFail();
 
-      const booking = await new Booking({
+      const room = await Room.create({
         _id: new mongoose.Types.ObjectId(),
-        userId,
-        description,
-        images,
-        price,
-        conditions
-      }).save();
+        ...body
+      })
 
-      schedule[day].push({ bookingId: booking.id });
-
-      await schedule.save();
-
-      res.status(200).json({ schedule });
+      res.status(200).json(room);
     } catch (err) {
-      res.sendStatus(400);
+      next(err);
     }
   })();
 };
 
 exports.get_room_by_id = (req, res) => {
-  const { description, images, price, conditions } = req.body;
+  const { roomId } = req.params;
 
   (async () => {
     try {
@@ -42,35 +32,22 @@ exports.get_room_by_id = (req, res) => {
       if (!room) return res.sendStatus(404);
       res.status(200).json(room);
     } catch (err) {
-      res.sendStatus(400);
+      next(err);
     }
   })();
 };
-
+// to do
 exports.update_room_by_id = (req, res) => {
-  const { roomId } = req;
+  const { roomId, body } = req;
 
   (async () => {
     try {
       const room = await Room.findById(roomId);
       if (!room) return res.sendStatus(404);
+
       res.status(200).json(room);
     } catch (err) {
-      res.sendStatus(400);
-    }
-  })();
-};
-
-exports.get_room_by_id = (req, res) => {
-  const { roomId } = req;
-
-  (async () => {
-    try {
-      const room = await Room.findById(roomId);
-      if (!room) return res.sendStatus(404);
-      res.status(200).json(room);
-    } catch (err) {
-      res.sendStatus(400);
+      next(err);
     }
   })();
 };
@@ -92,8 +69,8 @@ exports.get_room_by_userId = (req, res) => {
 
 exports.get_rooms_filtered = (req, res) => {
   const {
-    dateFrom,
-    dateTo,
+    startDateFrom,
+    duration,
     type,
     additional,
     areaFrom,
@@ -101,12 +78,14 @@ exports.get_rooms_filtered = (req, res) => {
     capacityFrom,
     capacityTo
   } = req.query;
-  debugger
+
   (async () => {
     try {
-      const rooms = await Room.find().and(
-        dateFrom ? {} : {},
-        dateTo ? {} : {},
+      const bookings = await Booking.find();
+
+      const rooms = await Room.find({ $nin: bookings }).and(
+        startDateFrom ? { startDate: { $gte: startDateFrom } } : {},
+        duration ? { endDate: { $gte: startDateFrom } } : {},
         type ? {} : {},
         additional ? {} : {},
         areaFrom ? {} : {},
@@ -114,8 +93,6 @@ exports.get_rooms_filtered = (req, res) => {
         capacityFrom ? {} : {},
         capacityTo ? {} : {}
       );
-
-
 
       if (!rooms) return res.sendStatus(500);
       res.status(200).json(rooms);
